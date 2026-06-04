@@ -62,7 +62,10 @@
               <div class="mb-3">
                 <label for="category" class="form-label">Category</label>
                 <select id="category" class="form-select">
-                  <option>CATEGORY</option>
+                  <option value="" disabled selected>--Select category--</option>
+                  <option v-for="category in CATEGORIES" :key="category" :value="category">
+                    {{ category }}
+                  </option>
                 </select>
               </div>
 
@@ -98,6 +101,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { APP_ROUTE_NAMES } from '@/constants/routeNames'
 import { CONFIG_IMG_URL } from '@/constants/config'
+import { CATEGORIES } from '@/constants/constants'
 
 const loading = ref(false)
 
