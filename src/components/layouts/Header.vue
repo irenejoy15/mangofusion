@@ -81,10 +81,14 @@
 
       <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         <li>
-          <button class="dropdown-item"><i class="bi bi-sun"></i> LIGHT</button>
+          <button class="dropdown-item" @click="themeStore.setTheme('light')">
+            <i class="bi bi-sun"></i> LIGHT
+          </button>
         </li>
         <li>
-          <button class="dropdown-item"><i class="bi bi-moon"></i> DARK</button>
+          <button class="dropdown-item" @click="themeStore.setTheme('dark')">
+            <i class="bi bi-moon"></i> DARK
+          </button>
         </li>
       </ul>
     </div>
@@ -93,4 +97,6 @@
 
 <script setup>
 import { APP_ROUTE_NAMES } from '@/constants/routeNames.js'
+import { useThemeStore } from '@/stores/themeStore.js'
+const themeStore = useThemeStore()
 </script>
