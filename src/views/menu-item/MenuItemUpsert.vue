@@ -19,7 +19,11 @@
             Create Item
           </button>
 
-          <button type="button" class="btn btn-outline border btn-sm gap-2 rounded-1 px-4 py-2">
+          <button
+            type="button"
+            class="btn btn-outline border btn-sm gap-2 rounded-1 px-4 py-2"
+            @click="router.push({ name: APP_ROUTE_NAMES.MENU_ITEM_LIST })"
+          >
             Cancel
           </button>
         </div>
@@ -144,6 +148,7 @@ const menuItemObj = reactive({
   image: '',
 })
 
+const formData = new FormData()
 const router = useRouter()
 const route = useRoute()
 
@@ -169,8 +174,16 @@ const onFormSubmit = async (event) => {
   if (menuItemObj.description.length < 10) errorList.push('DESCRIPTION IS AT LEAST 10 CHARACTERS.')
   if (menuItemObj.price <= 0) errorList.push('PRICE MUST BE GREATER THAN 0.')
   if (menuItemObj.category === '') errorList.push('CATEGORY IS REQUIRED.')
+  if (newUploadImage.value) {
+    formData.append('File', newUploadImage.value)
+  } else {
+    errorList.push('IMAGE IS REQUIRED.')
+  }
 
   if (!errorList.length) {
+    Object.entries(menuItemObj).forEach(([key, value]) => {
+      formData.append(key, value)
+    })
     console.log('Form is valid. Submitting data:', { ...menuItemObj })
   }
   isProcessing.value = false
