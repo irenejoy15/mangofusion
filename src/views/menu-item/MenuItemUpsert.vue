@@ -16,7 +16,7 @@
             class="btn btn-success btn-sm gap-2 rounded-1 px-4 py-2"
           >
             <span class="spinner-border spinner-border-sm me-2"></span>
-            Create Item
+            {{ menuItemIdForUpdate > 0 ? 'Update' : 'Create' }} ITEM
           </button>
 
           <button
@@ -102,8 +102,12 @@
           <div class="col-lg-5">
             <div>
               <img
-                v-if="newUploadImage_base64 != ''"
-                :src="newUploadImage_base64 != '' ? newUploadImage_base64 : menuItemObj.image"
+                v-if="menuItemIdForUpdate > 0 || newUploadImage_base64 != ''"
+                :src="
+                  newUploadImage_base64 != ''
+                    ? newUploadImage_base64
+                    : CONFIG_IMG_URL + menuItemObj.image
+                "
                 class="img-fluid w-100 mb-3 rounded"
                 style="aspect-ratio: 1/1; object-fit: cover"
               />
@@ -132,6 +136,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { APP_ROUTE_NAMES } from '@/constants/routeNames'
 import { CATEGORIES } from '@/constants/constants'
 import menuItemService from '@/services/menuItemService'
+import { CONFIG_IMG_URL } from '@/constants/config'
 
 const loading = ref(false)
 const isProcessing = ref(false)
@@ -156,8 +161,9 @@ const menuItemObj = reactive({
 const formData = new FormData()
 
 // FOR EDITING, FETCH EXISTING DATA AND POPULATE THE FORM
+// SAME NG ON ONIT
 onMounted(async () => {
-  if (!menuItemIdForUpdate) return
+  if (menuItemIdForUpdate <= 0) return
   loading.value = true
   try {
     const result = await menuItemService.getMenuItemById(menuItemIdForUpdate)
@@ -197,27 +203,44 @@ const onFormSubmit = async (event) => {
   if (newUploadImage.value) {
     formData.append('File', newUploadImage.value)
   } else {
-    errorList.push('IMAGE IS REQUIRED.')
+    // FOR UPDATE, IMAGE IS OPTIONAL. FOR CREATE, IMAGE IS REQUIRED
+    if (menuItemIdForUpdate == 0) {
+      errorList.push('IMAGE IS REQUIRED.')
+    }
   }
   if (!errorList.length) {
     Object.entries(menuItemObj).forEach(([key, value]) => {
       formData.append(key, value)
     })
     console.log('Form data prepared for submission:', Array.from(formData.entries()))
-    // TODO: Call API to create menu item with formData
-    menuItemService
-      .createMenuItem(formData)
-      .then((response) => {
-        console.log('Menu item created successfully:', response.data)
-        router.push({ name: APP_ROUTE_NAMES.MENU_ITEM_LIST })
-      })
-      .catch((error) => {
-        console.error('Error creating menu item:', error)
-        isProcessing.value = false
-        errorList.push('An error occurred while creating the menu item. Please try again.')
-      })
-    console.log('Form is valid. Submitting data:', { ...menuItemObj })
+
+    if (menuItemIdForUpdate == 0) {
+      // TODO: Call API to create menu item with formData
+      menuItemService
+        .createMenuItem(formData)
+        .then((response) => {
+          console.log('Menu item created successfully:', response.data)
+          router.push({ name: APP_ROUTE_NAMES.MENU_ITEM_LIST })
+        })
+        .catch((error) => {
+          console.error('Error creating menu item:', error)
+          isProcessing.value = false
+          errorList.push('An error occurred while creating the menu item. Please try again.')
+        })
+    } else {
+      // TODO: Call API to update menu item with formData and menuItemIdForUpdate
+      menuItemService
+        .updateMenuItem(menuItemIdForUpdate, formData)
+        .then((response) => {
+          router.push({ name: APP_ROUTE_NAMES.MENU_ITEM_LIST })
+        })
+        .catch((error) => {
+          console.error('Error updating menu item:', error)
+          isProcessing.value = false
+          errorList.push('An error occurred while updating the menu item. Please try again.')
+        })
+    }
+    isProcessing.value = false
   }
-  isProcessing.value = false
 }
 </script>
