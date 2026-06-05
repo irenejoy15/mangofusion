@@ -62,18 +62,19 @@
           </button>
 
           <div class="input-group input-group-sm w-100" v-else>
-            <button class="btn btn-outline-secondary" type="button">
-              <i class="bi bi-dash"></i>
+            <button class="btn btn-outline-secondary" type="button" v-if="!isProcessing">
+              <i class="bi bi-dash" @click="decreaseQuantity"></i>
             </button>
             <input
+              v-if="!isProcessing"
               type="text"
               class="form-control text-center px-2"
               readonly
               :value="itemQuantity"
               style="max-width: 50px"
             />
-            <button class="btn btn-outline-secondary" type="button">
-              <i class="bi bi-plus"></i>
+            <button class="btn btn-outline-secondary" type="button" v-if="!isProcessing">
+              <i class="bi bi-plus" @click="increaseQuantity"></i>
             </button>
           </div>
         </div>
@@ -115,5 +116,23 @@ const addToCart = () => {
   setTimeout(() => {
     isProcessing.value = false
   }, 600) // Reset processing state after a short delay
+}
+
+const decreaseQuantity = () => {
+  const cartStore = useCartStore()
+  isProcessing.value = true
+  setTimeout(() => {
+    cartStore.updateQuantity(props.menuItem.id, itemQuantity.value - 1)
+    isProcessing.value = false
+  }, 300) // Reset processing state after a short delay
+}
+
+const increaseQuantity = () => {
+  const cartStore = useCartStore()
+  isProcessing.value = true
+  setTimeout(() => {
+    cartStore.updateQuantity(props.menuItem.id, itemQuantity.value + 1)
+    isProcessing.value = false
+  }, 300) // Reset processing state after a short delay
 }
 </script>

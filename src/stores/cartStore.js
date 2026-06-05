@@ -34,6 +34,17 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
+  function updateQuantity(menuItemId, quantity) {
+    const item = cartItems.find((item) => item.id === menuItemId)
+    if (item) {
+      if (quantity <= 0) {
+        removeFromCart(menuItemId)
+      } else {
+        item.quantity = quantity
+      }
+    }
+  }
+
   function clearCart() {
     cartItems = []
   }
@@ -45,5 +56,6 @@ export const useCartStore = defineStore('cart', () => {
     addToCart,
     removeFromCart,
     clearCart,
+    updateQuantity,
   }
 })
