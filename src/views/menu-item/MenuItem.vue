@@ -25,7 +25,10 @@
   </td>
   <td class="pe-3 text-end">
     <div class="d-flex gap-2 justify-content-end">
-      <button class="btn btn-sm btn-outline-success">
+      <button
+        class="btn btn-sm btn-outline-success"
+        @click="router.push({ name: APP_ROUTE_NAMES.EDIT_MENU_ITEM, params: { id: menuItem.id } })"
+      >
         <i class="bi bi-pencil-square"></i>
       </button>
       <button class="btn btn-sm btn-outline-danger">
@@ -37,6 +40,11 @@
 
 <script setup>
 import { CONFIG_IMG_URL } from '@/constants/config'
+import { APP_ROUTE_NAMES } from '@/constants/routeNames'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 defineProps({
   menuItem: {
     type: Object,

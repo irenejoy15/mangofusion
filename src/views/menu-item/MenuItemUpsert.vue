@@ -139,6 +139,11 @@ const errorList = reactive([])
 const newUploadImage = ref(null)
 const newUploadImage_base64 = ref('')
 
+const router = useRouter()
+const route = useRoute()
+// FOR EDITING, THIS WILL BE POPULATED WITH EXISTING DATA
+const menuItemIdForUpdate = route.params.id
+
 const menuItemObj = reactive({
   name: '',
   description: '',
@@ -149,8 +154,21 @@ const menuItemObj = reactive({
 })
 
 const formData = new FormData()
-const router = useRouter()
-const route = useRoute()
+
+// FOR EDITING, FETCH EXISTING DATA AND POPULATE THE FORM
+onMounted(async () => {
+  if (!menuItemIdForUpdate) return
+  loading.value = true
+  try {
+    const result = await menuItemService.getMenuItemById(menuItemIdForUpdate)
+    Object.assign(menuItemObj, result)
+  } catch (error) {
+    console.error('Error fetching menu item data:', error)
+    errorList.push('An error occurred while loading the menu item data. Please try again.')
+  } finally {
+    loading.value = false
+  }
+})
 
 const handleFileChange = (event) => {
   isProcessing.value = true
