@@ -15,4 +15,19 @@ export default {
       throw error
     }
   },
+
+  // CREATE a new menu item
+  async createMenuItem(data) {
+    try {
+      const response = await api.post('/menuItem', data)
+      if (response.data.isSuccess) {
+        return response.data.result
+      } else {
+        throw new Error('Failed to create menu item')
+      }
+    } catch (error) {
+      console.error('Error creating menu item:', error)
+      throw error
+    }
+  },
 }

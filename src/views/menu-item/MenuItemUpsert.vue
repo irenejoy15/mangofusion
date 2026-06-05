@@ -130,8 +130,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { APP_ROUTE_NAMES } from '@/constants/routeNames'
-import { CONFIG_IMG_URL } from '@/constants/config'
 import { CATEGORIES } from '@/constants/constants'
+import menuItemService from '@/services/menuItemService'
 
 const loading = ref(false)
 const isProcessing = ref(false)
@@ -155,6 +155,7 @@ const route = useRoute()
 const handleFileChange = (event) => {
   isProcessing.value = true
   const file = event.target.files[0]
+  newUploadImage.value = file
   if (file) {
     const reader = new FileReader()
     reader.onload = (e) => {
@@ -167,11 +168,12 @@ const handleFileChange = (event) => {
 
 const onFormSubmit = async (event) => {
   isProcessing.value = true
+  console.log(newUploadImage.value)
   event.preventDefault()
   errorList.length = 0
   // Basic validation
   if (menuItemObj.name.length < 3) errorList.push('NAME IS AT LEAST 3 CHARACTERS.')
-  if (menuItemObj.description.length < 10) errorList.push('DESCRIPTION IS AT LEAST 10 CHARACTERS.')
+  if (menuItemObj.description.length < 4) errorList.push('DESCRIPTION IS AT LEAST 10 CHARACTERS.')
   if (menuItemObj.price <= 0) errorList.push('PRICE MUST BE GREATER THAN 0.')
   if (menuItemObj.category === '') errorList.push('CATEGORY IS REQUIRED.')
   if (newUploadImage.value) {
@@ -179,11 +181,23 @@ const onFormSubmit = async (event) => {
   } else {
     errorList.push('IMAGE IS REQUIRED.')
   }
-
   if (!errorList.length) {
     Object.entries(menuItemObj).forEach(([key, value]) => {
       formData.append(key, value)
     })
+    console.log('Form data prepared for submission:', Array.from(formData.entries()))
+    // TODO: Call API to create menu item with formData
+    menuItemService
+      .createMenuItem(formData)
+      .then((response) => {
+        console.log('Menu item created successfully:', response.data)
+        router.push({ name: APP_ROUTE_NAMES.MENU_ITEM_LIST })
+      })
+      .catch((error) => {
+        console.error('Error creating menu item:', error)
+        isProcessing.value = false
+        errorList.push('An error occurred while creating the menu item. Please try again.')
+      })
     console.log('Form is valid. Submitting data:', { ...menuItemObj })
   }
   isProcessing.value = false

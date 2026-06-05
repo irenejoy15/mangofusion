@@ -4,9 +4,6 @@ import { CONFIG_API_URL } from '../constants/config'
 // 2.A.3 create an axios instance with the base URL of the backend API and default headers
 const api = axios.create({
   baseURL: CONFIG_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 })
 
 export default api
