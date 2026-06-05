@@ -56,7 +56,7 @@
         <li class="nav-item px-1">
           <router-link :to="{ name: APP_ROUTE_NAMES.CART }">
             <i class="bi bi-cart"></i>
-            <span class="badge badge-pill bg-danger">{{ 3 }}</span>
+            <span class="badge badge-pill bg-danger">{{ cartStore.cartCount }}</span>
           </router-link>
         </li>
         <li class="nav-item mx-1">
@@ -98,5 +98,7 @@
 <script setup>
 import { APP_ROUTE_NAMES } from '@/constants/routeNames.js'
 import { useThemeStore } from '@/stores/themeStore.js'
+import { useCartStore } from '@/stores/cartStore.js'
 const themeStore = useThemeStore()
+const cartStore = useCartStore()
 </script>
