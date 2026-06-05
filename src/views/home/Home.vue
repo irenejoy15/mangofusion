@@ -43,7 +43,7 @@
                 'btn-success shadow-sm disabled': selectedCategory === category,
                 'btn-outline-success': selectedCategory !== category,
               }"
-              @click="selectedCategory = category"
+              @click="updateSelectedCategory(category)"
             >
               <span class="position-relative z-1">{{ category }}</span>
             </button>
@@ -78,9 +78,9 @@
         </div>
       </div>
       <div v-else>
-        <div class="row" v-if="menuItems.length && menuItems.length > 0">
+        <div class="row" v-if="filteredMenuItems.length && filteredMenuItems.length > 0">
           <MenuItemCard
-            v-for="menuItem in menuItems"
+            v-for="menuItem in filteredMenuItems"
             :key="menuItem.id"
             :menuItem="menuItem"
             class="list-item col-12 col-md-6 col-lg-4 pb-4"
@@ -101,7 +101,7 @@
 <script setup>
 import MenuItemCard from '@/components/card/menuItemCard.vue'
 import menuItemService from '@/services/menuItemService'
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { APP_ROUTE_NAMES } from '@/constants/routeNames'
 import { useSwal } from '@/composables/swal'
@@ -111,10 +111,25 @@ import { CATEGORIES } from '@/constants/constants'
 const categoryList = ref(['ALL', ...CATEGORIES])
 const selectedCategory = ref('ALL')
 
-const menuItems = reactive([])
+let menuItems = reactive([])
 const loading = ref(false)
 const router = useRouter()
 const { showError, showConfirmation, showSuccess } = useSwal()
+
+// FILTER CATEGORIES
+function updateSelectedCategory(category) {
+  selectedCategory.value = category
+}
+
+const filteredMenuItems = computed(() => {
+  let tempArray =
+    selectedCategory.value === 'ALL'
+      ? [...menuItems]
+      : menuItems.filter(
+          (item) => item.category.toUpperCase() === selectedCategory.value.toUpperCase(),
+        )
+  return tempArray
+})
 
 const fetchMenuItems = async () => {
   menuItems.length = 0
