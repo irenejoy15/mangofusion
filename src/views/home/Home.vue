@@ -88,6 +88,7 @@
             v-for="menuItem in filteredMenuItems"
             :key="menuItem.id"
             :menuItem="menuItem"
+            @showDetails="handleShowDetails"
             class="list-item col-12 col-md-6 col-lg-4 pb-4"
           ></MenuItemCard>
 
@@ -100,6 +101,11 @@
     </div>
 
     <!-- Menu Detail Modal -->
+    <MenuItemDetailsModal
+      :show="showModal"
+      :menuItem="selectedMenuItem"
+      @close="closeDetailsModal"
+    />
   </div>
 </template>
 
@@ -108,7 +114,6 @@ import MenuItemCard from '@/components/card/menuItemCard.vue'
 import menuItemService from '@/services/menuItemService'
 import { reactive, ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { APP_ROUTE_NAMES } from '@/constants/routeNames'
 import { useSwal } from '@/composables/swal'
 import {
   CATEGORIES,
@@ -118,6 +123,8 @@ import {
   SORT_NAME_A_TO_Z,
   SORT_NAME_Z_TO_A,
 } from '@/constants/constants'
+
+import MenuItemDetailsModal from '@/components/modals/MenuItemDetailsModal.vue'
 
 // CATEGORIES is an array of category strings imported from constants
 const categoryList = reactive(['ALL', ...CATEGORIES])
@@ -133,6 +140,19 @@ const menuItems = reactive([])
 const loading = ref(false)
 const router = useRouter()
 const { showError, showConfirmation, showSuccess } = useSwal()
+
+// MODALS
+const showModal = ref(false)
+const selectedMenuItem = ref(null)
+const handleShowDetails = (menuItem) => {
+  selectedMenuItem.value = menuItem
+  showModal.value = true
+}
+
+const closeDetailsModal = () => {
+  selectedMenuItem.value = null
+  showModal.value = false
+}
 
 // FILTER CATEGORIES
 function updateSelectedCategory(category) {
