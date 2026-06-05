@@ -14,14 +14,16 @@
             type="submit"
             form="menuForm"
             class="btn btn-success btn-sm gap-2 rounded-1 px-4 py-2"
+            :disabled="isProcessing"
           >
-            <span class="spinner-border spinner-border-sm me-2"></span>
+            <span class="spinner-border spinner-border-sm me-2" v-if="isProcessing"></span>
             {{ menuItemIdForUpdate > 0 ? 'Update' : 'Create' }} ITEM
           </button>
 
           <button
             type="button"
             class="btn btn-outline border btn-sm gap-2 rounded-1 px-4 py-2"
+            :disabled="loading"
             @click="router.push({ name: APP_ROUTE_NAMES.MENU_ITEM_LIST })"
           >
             Cancel
@@ -163,7 +165,7 @@ const formData = new FormData()
 // FOR EDITING, FETCH EXISTING DATA AND POPULATE THE FORM
 // SAME NG ON ONIT
 onMounted(async () => {
-  if (menuItemIdForUpdate <= 0) return
+  if (!menuItemIdForUpdate) return
   loading.value = true
   try {
     const result = await menuItemService.getMenuItemById(menuItemIdForUpdate)
@@ -240,7 +242,7 @@ const onFormSubmit = async (event) => {
           errorList.push('An error occurred while updating the menu item. Please try again.')
         })
     }
-    isProcessing.value = false
   }
+  isProcessing.value = false
 }
 </script>
