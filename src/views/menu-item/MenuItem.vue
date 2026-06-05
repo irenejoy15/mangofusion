@@ -31,7 +31,7 @@
       >
         <i class="bi bi-pencil-square"></i>
       </button>
-      <button class="btn btn-sm btn-outline-danger">
+      <button class="btn btn-sm btn-outline-danger" @click="sendDeleteId(menuItem.id)">
         <i class="bi bi-trash3-fill"></i>
       </button>
     </div>
@@ -42,6 +42,7 @@
 import { CONFIG_IMG_URL } from '@/constants/config'
 import { APP_ROUTE_NAMES } from '@/constants/routeNames'
 import { useRouter } from 'vue-router'
+import { defineEmits } from 'vue'
 
 const router = useRouter()
 
@@ -51,4 +52,9 @@ defineProps({
     required: true,
   },
 })
+const emit = defineEmits(['menuItemDeleted'])
+
+const sendDeleteId = async (id) => {
+  emit('menuItemDeleted', id)
+}
 </script>

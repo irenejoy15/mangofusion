@@ -139,6 +139,9 @@ import { APP_ROUTE_NAMES } from '@/constants/routeNames'
 import { CATEGORIES } from '@/constants/constants'
 import menuItemService from '@/services/menuItemService'
 import { CONFIG_IMG_URL } from '@/constants/config'
+// FOR SWAL ALERTS
+import { useSwal } from '@/composables/swal'
+const { showAlert, showSuccess, showError, showConfirmation } = useSwal()
 
 const loading = ref(false)
 const isProcessing = ref(false)
@@ -206,7 +209,7 @@ const onFormSubmit = async (event) => {
     formData.append('File', newUploadImage.value)
   } else {
     // FOR UPDATE, IMAGE IS OPTIONAL. FOR CREATE, IMAGE IS REQUIRED
-    if (menuItemIdForUpdate == 0) {
+    if (!menuItemIdForUpdate) {
       errorList.push('IMAGE IS REQUIRED.')
     }
   }
@@ -216,16 +219,16 @@ const onFormSubmit = async (event) => {
     })
     console.log('Form data prepared for submission:', Array.from(formData.entries()))
 
-    if (menuItemIdForUpdate == 0) {
+    if (!menuItemIdForUpdate) {
       // TODO: Call API to create menu item with formData
       menuItemService
         .createMenuItem(formData)
         .then((response) => {
-          console.log('Menu item created successfully:', response.data)
+          showSuccess('Menu item created successfully!')
           router.push({ name: APP_ROUTE_NAMES.MENU_ITEM_LIST })
         })
         .catch((error) => {
-          console.error('Error creating menu item:', error)
+          showError('An error occurred while creating the menu item. Please try again.')
           isProcessing.value = false
           errorList.push('An error occurred while creating the menu item. Please try again.')
         })
@@ -234,10 +237,11 @@ const onFormSubmit = async (event) => {
       menuItemService
         .updateMenuItem(menuItemIdForUpdate, formData)
         .then((response) => {
+          showSuccess('Menu item updated successfully!')
           router.push({ name: APP_ROUTE_NAMES.MENU_ITEM_LIST })
         })
         .catch((error) => {
-          console.error('Error updating menu item:', error)
+          showError('An error occurred while updating the menu item. Please try again.')
           isProcessing.value = false
           errorList.push('An error occurred while updating the menu item. Please try again.')
         })

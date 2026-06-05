@@ -11,7 +11,7 @@
     </thead>
     <tbody>
       <tr v-for="menuItem in menuItems" :key="menuItem.id">
-        <MenuItem :menuItem="menuItem" />
+        <MenuItem @menuItemDeleted="deleteId" :menuItem="menuItem" />
       </tr>
     </tbody>
   </table>
@@ -25,4 +25,9 @@ defineProps({
     required: true,
   },
 })
+const emit = defineEmits(['menuItemDeleted'])
+
+const deleteId = (id) => {
+  emit('menuItemDeleted', id)
+}
 </script>

@@ -26,7 +26,7 @@
         </div>
         <div class="card-body p-3">
           <div class="table-responsive">
-            <MenuItemTable :menuItems="menuItems" />
+            <MenuItemTable @menuItemDeleted="handleMenuItemDeleted" :menuItems="menuItems" />
           </div>
         </div>
       </div>
@@ -42,6 +42,26 @@ import MenuItemTable from './MenuItemTable.vue'
 // 2.B.4 import the route names constant to use in navigation if needed
 import { useRouter } from 'vue-router'
 import { APP_ROUTE_NAMES } from '@/constants/routeNames'
+import { useSwal } from '@/composables/swal'
+
+const { showError, showConfirmation, showSuccess } = useSwal()
+
+// RECEIVE EMIT FROM CHILD COMPONENT TO UPDATE THE LIST AFTER DELETION
+const handleMenuItemDeleted = async (deletedId) => {
+  try {
+    const confirmResult = await showConfirmation('Are you sure you want to delete this menu item?')
+    if (confirmResult.isConfirmed) {
+      loading.value = true
+      await menuItemService.deleteMenuItem(deletedId)
+      showSuccess('Menu item deleted successfully.')
+      fetchMenuItems() // Refresh the list after deletion
+    }
+  } catch (error) {
+    showError('Failed to delete menu item. Please try again.')
+  } finally {
+    loading.value = false
+  }
+}
 
 const menuItems = reactive([])
 const loading = ref(false)
@@ -49,17 +69,16 @@ const loading = ref(false)
 const router = useRouter()
 
 const fetchMenuItems = async () => {
+  // RESET THE LIST BEFORE FETCHING NEW DATA
+  menuItems.length = 0
   loading.value = true
   try {
     var result = await menuItemService.getMenuItems()
     menuItems.push(...result)
-    console.log('Fetched menu items:', menuItems.value)
   } catch (error) {
-    console.error('Error fetching menu items:', error)
   } finally {
     loading.value = false
   }
 }
-
 onMounted(fetchMenuItems)
 </script>
