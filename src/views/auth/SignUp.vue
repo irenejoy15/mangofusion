@@ -6,27 +6,32 @@
           <div class="card-body p-4">
             <h2 class="text-center mb-4">Sign Up</h2>
 
-            <form>
+            <form @submit.prevent="onSignSubmit">
               <div class="mb-3">
                 <label for="name" class="form-label">Full Name</label>
-                <input type="text" class="form-control" id="name" />
+                <input type="text" class="form-control" id="name" v-model="formObj.name" />
               </div>
 
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" />
+                <input type="email" class="form-control" id="email" v-model="formObj.email" />
               </div>
 
               <div class="mb-3">
                 <label for="role" class="form-label">Role</label>
-                <select class="form-select" id="role">
+                <select class="form-select" id="role" v-model="formObj.role">
                   <option v-for="role in ROLES" :key="role">{{ role }}</option>
                 </select>
               </div>
 
               <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" />
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  v-model="formObj.password"
+                />
               </div>
 
               <div class="alert alert-danger" v-if="errorList.length > 0" role="alert">
@@ -64,11 +69,40 @@ import { APP_ROUTE_NAMES } from '@/constants/routeNames'
 import { reactive, ref } from 'vue'
 
 const errorList = ref([])
-const loading = ref(false)
+const isLoading = ref(false)
 const formObj = reactive({
   name: '',
   email: '',
-  role: '',
+  role: 'Customer',
   password: '',
 })
+
+const onSignSubmit = async () => {
+  errorList.value.length = 0 // Clear previous errors
+  isLoading.value = true
+
+  if (formObj.name === undefined || formObj.name.length === 0) {
+    errorList.value.push('Name is required.')
+  }
+
+  if (formObj.email === undefined || formObj.email.length === 0) {
+    errorList.value.push('Email is required.')
+  }
+
+  if (formObj.password === undefined || formObj.password.length === 0) {
+    errorList.value.push('Password is required.')
+  }
+
+  if (errorList.value.length > 0) {
+    isLoading.value = false
+    return
+  }
+
+  try {
+  } catch (error) {
+    errorList.value.push(error.message || 'An error occurred during sign up. Please try again.')
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
