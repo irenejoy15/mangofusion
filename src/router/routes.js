@@ -62,8 +62,8 @@ const router = createRouter({
       props: true,
     },
     {
-      path: '/admin/order-confirmation?:id',
-      name: APP_ROUTE_NAMES.ORDER_CONFIRMATION,
+      path: '/admin/order-confirmation/:orderId',
+      name: APP_ROUTE_NAMES.ORDER_CONFIRM,
       component: OrderConfirmation,
       props: true,
     },

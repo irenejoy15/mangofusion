@@ -104,7 +104,11 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cartStore'
 import { useAuthStore } from '@/stores/authStore'
+import orderService from '@/services/orderService'
+import { APP_ROUTE_NAMES } from '@/constants/routeNames'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const cartStore = useCartStore()
 const authStore = useAuthStore()
 const isSubmitting = ref(false)
@@ -170,6 +174,18 @@ const submitOrder = async () => {
           quantity: item.quantity,
         }))
       : []
+
+    const orderHeader = await orderService.createOrder(orderData)
+    console.log('Order created successfully:', orderHeader)
+    if (orderHeader && orderHeader.orderHeaderId > 0) {
+      cartStore.clearCart()
+      router.push({
+        name: APP_ROUTE_NAMES.ORDER_CONFIRM,
+        params: { orderId: orderHeader.orderHeaderId },
+      })
+    } else {
+      errorList.push('Failed to create order. Please try again.')
+    }
   } catch (error) {
     errorList.push(error.message || 'An error occurred while placing the order. Please try again.')
   } finally {
