@@ -17,7 +17,7 @@
         <span class="d-block" v-for="(error, index) in errorList" :key="index">{{ error }}</span>
       </div>
 
-      <form>
+      <form @submit.prevent="submitOrder">
         <div class="mb-3">
           <label for="pickupName" class="form-label">Name</label>
           <input type="text" class="form-control" id="pickupName" v-model="orderData.pickUpName" />
@@ -128,4 +128,29 @@ const orderData = reactive({
   totalItem: 1,
   orderDetailsDTO: [],
 })
+
+const submitOrder = async () => {
+  errorList.length = 0
+  try {
+    isSubmitting.value = true
+    if (orderData.pickUpName === undefined || orderData.pickUpName.length === 0) {
+      errorList.push('Please enter your name.')
+    }
+    if (orderData.pickUpPhoneNumber === undefined || orderData.pickUpPhoneNumber.length === 0) {
+      errorList.push('Please enter your phone number.')
+    }
+    if (orderData.pickUpEmail === undefined || orderData.pickUpEmail.length === 0) {
+      errorList.push('Please enter your email.')
+    }
+
+    if (errorList.length > 0) {
+      isSubmitting.value = false
+      return
+    }
+  } catch (error) {
+    errorList.push(error.message || 'An error occurred while placing the order. Please try again.')
+  } finally {
+    isSubmitting.value = false
+  }
+}
 </script>
