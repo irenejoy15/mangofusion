@@ -13,6 +13,7 @@ import SignUp from '@/views/auth/SignUp.vue'
 import { APP_ROUTE_NAMES } from '@/constants/routeNames'
 
 import { createRouter, createWebHistory } from 'vue-router'
+import { requireAuth, requireAdmin } from '@/router/guards'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,11 +42,13 @@ const router = createRouter({
       path: '/cart',
       name: APP_ROUTE_NAMES.CART,
       component: ShoppingCart,
+      beforeEnter: [requireAuth],
     },
     {
       path: '/admin/manage-menu-items',
       name: APP_ROUTE_NAMES.MENU_ITEM_LIST,
       component: MenuItemList,
+      beforeEnter: [requireAdmin],
     },
     {
       path: '/admin/manage-menu-items/create',
