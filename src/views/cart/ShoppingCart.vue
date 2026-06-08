@@ -106,7 +106,7 @@
                     <span class="fw-bold">Total:</span>
                     <span class="fw-bold text-success">{{ cartStore.cartTotal }}</span>
                   </div>
-                  <button class="btn btn-success w-100">
+                  <button class="btn btn-success w-100" @click="checkout">
                     <i class="bi bi-cash-stack"></i>
                     Proceed to Checkout
                   </button>
@@ -121,16 +121,32 @@
       </div>
     </div>
   </div>
+  <PlaceOrderModal :is-open="showPlaceOrderModal" @close="showPlaceOrderModal = false" />
 </template>
 
 <script setup>
 import { useCartStore } from '@/stores/cartStore'
 import { CONFIG_IMG_URL } from '@/constants/config'
 import { APP_ROUTE_NAMES } from '@/constants/routeNames'
+import PlaceOrderModal from '@/components/modals/PlaceOrderModal.vue'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useSwal } from '@/composables/swal'
+
+const { showError } = useSwal()
+
 const router = useRouter()
 const cartStore = useCartStore()
+
+const showPlaceOrderModal = ref(false)
+
+const checkout = () => {
+  if (cartStore.cartCount.value === 0) {
+    showError('Your cart is empty. Please add items to your cart before proceeding to checkout.')
+    return
+  }
+  showPlaceOrderModal.value = true
+}
 
 const decreaseQuantity = (itemId) => {
   const item = cartStore.cartItems.find((item) => item.id === itemId)
