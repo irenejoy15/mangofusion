@@ -101,10 +101,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cartStore'
+import { useAuthStore } from '@/stores/authStore'
 
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 const isSubmitting = ref(false)
 const errorList = reactive([])
 const props = defineProps({
@@ -129,6 +131,14 @@ const orderData = reactive({
   orderDetailsDTO: [],
 })
 
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    orderData.applicationUserId = authStore.user.id
+    orderData.pickUpName = authStore.user.name
+    orderData.pickUpEmail = authStore.user.email
+  }
+})
+
 const submitOrder = async () => {
   errorList.length = 0
   try {
@@ -147,6 +157,19 @@ const submitOrder = async () => {
       isSubmitting.value = false
       return
     }
+
+    orderData.orderTotal = cartStore.cartTotal
+
+    orderData.totalItem = cartStore.cartCount
+
+    orderData.orderDetailsDTO = Array.isArray(cartStore.cartItems)
+      ? cartStore.cartItems.map((item) => ({
+          menuItemId: item.id,
+          itemName: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        }))
+      : []
   } catch (error) {
     errorList.push(error.message || 'An error occurred while placing the order. Please try again.')
   } finally {
