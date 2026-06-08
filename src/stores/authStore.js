@@ -25,6 +25,41 @@ export const useAuthStore = defineStore(
       return isAuthenticated.value ? user : null
     })
 
+    function decodeToken(token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        return {
+          email: payload.email,
+          role: payload.role,
+          name: payload.name,
+          id: payload.id,
+        }
+      } catch (error) {
+        console.error('Error decoding token:', error)
+        return null
+      }
+    }
+
+    function initialize() {
+      try {
+        const token = cookies.get('token_mango')
+        if (token) {
+          const userData = decodeToken(token)
+          if (userData) {
+            Object.assign(user, userData)
+            isAuthenticated.value = true
+          } else {
+            clearAuthData()
+          }
+        } else {
+          clearAuthData()
+        }
+      } catch (err) {
+        console.error('Error during initialization:', err)
+        clearAuthData()
+      }
+    }
+
     // ACTIONS
     const { showSuccess, showError } = useSwal()
     async function signUp(userData) {
@@ -48,7 +83,6 @@ export const useAuthStore = defineStore(
       try {
         const { token, user: userData } = await authService.signIn(formObj)
         Object.assign(user, userData)
-        user.isLoggedIn = true
         isAuthenticated.value = true
 
         cookies.set('token_mango', token, { expires: 1 }) // Store token in cookie for 1 day
@@ -63,12 +97,24 @@ export const useAuthStore = defineStore(
       }
     }
 
+    function clearAuthData() {
+      Object.assign(user, {
+        id: '',
+        name: '',
+        email: '',
+        role: '',
+      })
+      isAuthenticated.value = false
+      cookies.remove('token_mango')
+    }
+
     return {
       user,
       isAuthenticated,
       getUserInfo,
       signUp,
       signIn,
+      initialize,
     }
   },
   {

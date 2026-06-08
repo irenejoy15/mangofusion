@@ -11,6 +11,8 @@ import router from './router/routes.js'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 // 2.4 Import the theme store to initialize the theme on app load
 import { useThemeStore } from '@/stores/themeStore.js'
+// FOR AUTH INITIALIZATION
+import { useAuthStore } from '@/stores/authStore.js'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -27,4 +29,6 @@ if (themeStore.theme) {
   document.documentElement.setAttribute('data-bs-theme', themeStore.theme)
 }
 
+const authStore = useAuthStore()
+authStore.initialize()
 app.mount('#app')
