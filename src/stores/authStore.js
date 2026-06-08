@@ -42,11 +42,29 @@ export const useAuthStore = defineStore(
       }
     }
 
+    async function signIn(userData) {
+      try {
+        const response = await authService.signIn(userData)
+        showSuccess('Login successful')
+        return {
+          response,
+          success: true,
+          message: 'Login successful',
+        }
+      } catch (err) {
+        return {
+          success: false,
+          message: err.response?.data?.errorMessages?.join('--') || 'Login Failed',
+        }
+      }
+    }
+
     return {
       user,
       isAuthenticated,
       getUserInfo,
       signUp,
+      signIn,
     }
   },
   {
