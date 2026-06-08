@@ -20,6 +20,10 @@ export const useAuthStore = defineStore(
     })
 
     const isAuthenticated = ref(false)
+
+    const isAdmin = computed(() => {
+      return isAuthenticated.value && user.role === 'Admin'
+    })
     // GETTER
     const getUserInfo = computed(() => {
       return isAuthenticated.value ? user : null
@@ -108,6 +112,12 @@ export const useAuthStore = defineStore(
       cookies.remove('token_mango')
     }
 
+    function signOut() {
+      clearAuthData()
+      showSuccess('Logged out successfully')
+      router.push({ name: APP_ROUTE_NAMES.SIGN_IN })
+    }
+
     return {
       user,
       isAuthenticated,
@@ -115,6 +125,8 @@ export const useAuthStore = defineStore(
       signUp,
       signIn,
       initialize,
+      signOut,
+      isAdmin,
     }
   },
   {

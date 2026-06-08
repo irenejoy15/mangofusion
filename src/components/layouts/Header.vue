@@ -67,7 +67,7 @@
         <li class="nav-item mx-1" v-if="!authStore.isAuthenticated">
           <router-link :to="{ name: APP_ROUTE_NAMES.SIGN_IN }">SIGN IN</router-link>
         </li>
-        <li class="nav-item mx-1" v-if="authStore.isAuthenticated">
+        <li class="nav-item mx-1" v-if="authStore.isAuthenticated" @click="authStore.signOut">
           <router-link>LOG OUT</router-link>
         </li>
       </ul>
