@@ -11,3 +11,5 @@ export const SORT_OPTIONS = [
   SORT_PRICE_LOW_TO_HIGH,
   SORT_PRICE_HIGH_TO_LOW,
 ]
+
+export const ROLES = ['Customer', 'Admin']

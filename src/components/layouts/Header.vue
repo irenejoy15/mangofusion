@@ -63,6 +63,9 @@
           <router-link :to="{ name: APP_ROUTE_NAMES.SIGN_UP }">SIGN UP</router-link>
         </li>
         <li class="nav-item mx-1">
+          <router-link :to="{ name: APP_ROUTE_NAMES.SIGN_IN }">SIGN IN</router-link>
+        </li>
+        <li class="nav-item mx-1">
           <router-link>LOG OUT</router-link>
         </li>
       </ul>
