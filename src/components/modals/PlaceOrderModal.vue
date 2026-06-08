@@ -13,40 +13,65 @@
         <button class="btn" @click="closeModal"><i class="bi bi-x-circle"></i></button>
       </div>
 
-      <div class="alert alert-danger" role="alert">
-        <span class="d-block"> ERROR </span>
+      <div v-if="errorList.length > 0" class="alert alert-danger" role="alert">
+        <span class="d-block" v-for="(error, index) in errorList" :key="index">{{ error }}</span>
       </div>
 
       <form>
         <div class="mb-3">
           <label for="pickupName" class="form-label">Name</label>
-          <input type="text" class="form-control" id="pickupName" />
+          <input type="text" class="form-control" id="pickupName" v-model="orderData.pickUpName" />
         </div>
 
         <div class="mb-3">
           <label for="pickupPhoneNumber" class="form-label">Phone Number</label>
-          <input type="tel" class="form-control" id="pickupPhoneNumber" />
+          <input
+            type="tel"
+            class="form-control"
+            id="pickupPhoneNumber"
+            v-model="orderData.pickUpPhoneNumber"
+          />
         </div>
 
         <div class="mb-4">
           <label for="pickupEmail" class="form-label">Email</label>
-          <input type="email" class="form-control" id="pickupEmail" />
+          <input
+            type="email"
+            class="form-control"
+            id="pickupEmail"
+            v-model="orderData.pickUpEmail"
+          />
         </div>
 
         <div class="bg-body-tertiary rounded-3 p-3 mb-4">
           <h5 class="fw-bold mb-3">Order Summary</h5>
-          <div>
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="fw-medium">NAME</span>
+          <div
+            v-if="cartStore.cartItems && cartStore.cartItems.length > 0"
+            class="text-center text-body-secondary py-5"
+          >
+            <div
+              class="d-flex justify-content-between align-items-center mb-2"
+              v-for="item in cartStore.cartItems"
+              :key="item.id"
+            >
+              <span class="fw-medium">{{ item.name }}</span>
               <div class="d-flex align-items-center gap-3">
-                <span class="text-body-secondary">quantity x</span>
-                <span class="fw-medium">$ </span>
+                <span class="text-body-secondary">{{ item.quantity }} x</span>
+                <span class="fw-medium">$ {{ item.price }}</span>
               </div>
             </div>
             <div class="border-top pt-3 mt-3">
               <div class="d-flex justify-content-between align-items-center">
                 <span class="fw-bold">Total</span>
-                <span class="fw-bold fs-5">$</span>
+                <span class="fw-bold fs-5"
+                  >$
+                  {{
+                    cartStore.cartItems.reduce(
+                      (total, item) => total + item.price * item.quantity,
+                      0,
+                    )
+                  }}</span
+                >
               </div>
             </div>
           </div>
@@ -56,14 +81,18 @@
           <button type="button" class="btn btn-outline-secondary px-4" @click="closeModal">
             Cancel
           </button>
-          <button type="submit" class="btn btn-success px-4">
-            <span class="d-flex align-items-center gap-2">
+          <button
+            type="submit"
+            class="btn btn-success px-4"
+            :disabled="isSubmitting || !cartStore.cartItems || cartStore.cartItems.length === 0"
+          >
+            <span v-if="isSubmitting" class="d-flex align-items-center gap-2">
               <div class="spinner-border spinner-border-sm" role="status">
                 <span class="visually-hidden">Loading...</span>
               </div>
               Processing...
             </span>
-            <span>Place Order</span>
+            <span v-else>Place Order</span>
           </button>
         </div>
       </form>
@@ -73,6 +102,9 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
+import { useCartStore } from '@/stores/cartStore'
+
+const cartStore = useCartStore()
 const isSubmitting = ref(false)
 const errorList = reactive([])
 const props = defineProps({
@@ -86,4 +118,14 @@ const emit = defineEmits(['close'])
 const closeModal = () => {
   emit('close')
 }
+
+const orderData = reactive({
+  pickUpName: '',
+  pickUpPhoneNumber: '',
+  pickUpEmail: '',
+  applicationUserId: '',
+  orderTotal: 1,
+  totalItem: 1,
+  orderDetailsDTO: [],
+})
 </script>
