@@ -42,15 +42,14 @@ export const useAuthStore = defineStore(
       }
     }
 
-    async function signIn(userData) {
+    async function signIn(formObj) {
       try {
-        const response = await authService.signIn(userData)
+        const { token, user: userData } = await authService.signIn(formObj)
+        Object.assign(user, userData)
+        user.isLoggedIn = true
+        isAuthenticated.value = true
         showSuccess('Login successful')
-        return {
-          response,
-          success: true,
-          message: 'Login successful',
-        }
+        router.push({ name: APP_ROUTE_NAMES.HOME })
       } catch (err) {
         return {
           success: false,

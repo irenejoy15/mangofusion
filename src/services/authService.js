@@ -31,10 +31,19 @@ export default {
         email: userData.email,
         password: userData.password,
       })
-      console.log('Response', response.data)
 
       if (response.data.isSuccess) {
+        const { token, email } = response.data.result
+        const payload = JSON.parse(atob(token.split('.')[1]))
+
         return {
+          token,
+          user: {
+            email,
+            role: payload.role,
+            name: payload.UserName,
+            id: payload.id,
+          },
           success: true,
           message: 'Login successful',
         }
