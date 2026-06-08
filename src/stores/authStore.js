@@ -4,6 +4,8 @@ import authService from '@/services/authService'
 import router from '@/router/routes'
 import { APP_ROUTE_NAMES } from '@/constants/routeNames'
 import { useSwal } from '@/composables/swal'
+import cookies from 'js-cookie'
+
 export const useAuthStore = defineStore(
   'authStore',
   () => {
@@ -48,6 +50,9 @@ export const useAuthStore = defineStore(
         Object.assign(user, userData)
         user.isLoggedIn = true
         isAuthenticated.value = true
+
+        cookies.set('token_mango', token, { expires: 1 }) // Store token in cookie for 1 day
+
         showSuccess('Login successful')
         router.push({ name: APP_ROUTE_NAMES.HOME })
       } catch (err) {
