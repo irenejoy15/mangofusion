@@ -67,6 +67,9 @@
 import { ROLES } from '@/constants/constants'
 import { APP_ROUTE_NAMES } from '@/constants/routeNames'
 import { reactive, ref } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+
+const authStore = useAuthStore()
 
 const errorList = ref([])
 const isLoading = ref(false)
@@ -99,7 +102,21 @@ const onSignSubmit = async () => {
   }
 
   try {
+    const response = await authStore.signUp(formObj)
+
+    // Optionally, you can redirect the user to the sign-in page after successful sign-up
+    if (response.success) {
+    } else {
+      // SPLIT ERROR MESSAGE IF IT CONTAINS '--' AND DISPLAY EACH PART IN A NEW LINE
+      if (response.message !== undefined) {
+        const errorMessages = response.message.split('--')
+        errorMessages.forEach((msg) => {
+          errorList.value.push(msg)
+        })
+      }
+    }
   } catch (error) {
+    console.log('Sign up error:', error)
     errorList.value.push(error.message || 'An error occurred during sign up. Please try again.')
   } finally {
     isLoading.value = false
